@@ -47,10 +47,9 @@ RUN --mount=type=ssh \
     git submodule update --init --recursive
 
 WORKDIR /opt/ws/vision_dev
-RUN set -euxo pipefail; \
+RUN set -exo pipefail; \
     source /opt/ros/humble/setup.bash; \
     rosdep update; \
     rosdep install --from-paths src --ignore-src -r -y
-
 
 ENV DEBIAN_FRONTEND=dialog
