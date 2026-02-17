@@ -34,10 +34,10 @@ jobs:
         run: |
           set -euo pipefail
 
-          mapfile -t ALL < <(find images -mindepth 2 -maxdepth 2 -type f -name Dockerfile -print | sed 's|/Dockerfile$||' | sort)
+          mapfile -t ALL < <(find . -mindepth 2 -maxdepth 2 -type f -name Dockerfile -print | sed 's|/Dockerfile$||' | sort)
 
           if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.image }}" ]; then
-            SEL="images/${{ inputs.image }}"
+            SEL="${{ inputs.image }}"
             if [ ! -f "$SEL/Dockerfile" ]; then
               echo "Input image folder not found: $SEL" >&2
               exit 1
@@ -52,8 +52,8 @@ jobs:
             CHANGED="$(git diff --name-only HEAD~1 HEAD || true)"
             FILTERED=()
             for d in "${ALL[@]}"; do
-              name="${d#images/}"
-              if echo "$CHANGED" | grep -q "^images/$name/"; then
+              name="${d#./}"
+              if echo "$CHANGED" | grep -q "^$name/"; then
                 FILTERED+=("$d")
               fi
             done
@@ -67,7 +67,7 @@ jobs:
 
           INC=""
           for d in "${ALL[@]}"; do
-            name="${d#images/}"
+            name="${d#./}"
             INC="${INC}{\"name\":\"$name\",\"context\":\"$d\",\"dockerfile\":\"$d/Dockerfile\"},"
           done
           INC="[${INC%,}]"
