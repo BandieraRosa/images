@@ -37,10 +37,14 @@ WORKDIR /opt/ws
 RUN --mount=type=ssh \
     set -euxo pipefail; \
     if [[ -n "${VISION_BRANCH}" ]]; then \
-      git clone --recursive --branch "${VISION_BRANCH}" "${VISION_REPO_SSH}" vision_dev; \
+      git clone --branch "${VISION_BRANCH}" "${VISION_REPO_SSH}" vision_dev; \
     else \
-      git clone --recursive "${VISION_REPO_SSH}" vision_dev; \
-    fi
+      git clone "${VISION_REPO_SSH}" vision_dev; \
+    fi; \
+    cd vision_dev; \
+    git config --global url."git@github.com:".insteadOf "https://github.com/"; \
+    git submodule sync --recursive; \
+    git submodule update --init --recursive
 
 WORKDIR /opt/ws/vision_dev
 RUN set -euxo pipefail; \
