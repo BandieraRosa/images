@@ -10,6 +10,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ninja-build \
     libwpa-client-dev libnm-dev libudev-dev libasio-dev \
     git ca-certificates curl \
-  && rm -rf /var/lib/apt/lists/*
+    unzip
 
 RUN rosdep init || true
+
+RUN git clone https://github.com/BandieraRosa/vision_dev.git --recursive && \
+    cd vision_dev && \
+    source /opt/ros/humble/setup.bash && \
+    rosdep install --from-paths src --ignore-src -r -y \
+    && rm -rf /var/lib/apt/lists/*
+
