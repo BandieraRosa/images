@@ -23,8 +23,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libwpa-client-dev \
     libnm-dev \
     libudev-dev \
-    libasio-dev \
-    && rm -rf /var/lib/apt/lists/*
+    libasio-dev 
 
 RUN rosdep init || true
 
@@ -50,6 +49,7 @@ WORKDIR /opt/ws/vision_dev
 RUN set -exo pipefail; \
     source /opt/ros/humble/setup.bash; \
     rosdep update; \
-    rosdep install --from-paths src --ignore-src -r -y
+    rosdep install --from-paths src --ignore-src -r -y \
+    && rm -rf /var/lib/apt/lists/*
 
 ENV DEBIAN_FRONTEND=dialog
