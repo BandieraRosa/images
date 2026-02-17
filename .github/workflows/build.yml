@@ -84,6 +84,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up SSH Agent for GitHub private repo access
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_KEY_FOR_GITHUB }}
+
+      - name: Add GitHub to SSH known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
       - name: Set image repo (lowercase)
         id: img
         shell: bash
@@ -108,3 +119,5 @@ jobs:
             ${{ steps.img.outputs.repo }}/${{ matrix.name }}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          ssh: |
+            default=${{ env.SSH_AUTH_SOCK }}
